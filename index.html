@@ -14,7 +14,7 @@
 <body>
     <div class=col-md-12>
         <div class=col-md-1></div>
-        <div class=col-md-10 id=content>
+        <div class=col-md-10>
             <div id=stringButtons></div>
             <button id=addTopic>add topic</button>
             <input id=userTopic>
@@ -23,7 +23,6 @@
         </div>
         <div class=col-md-1></div>
     </div>
-
 
 
 
@@ -41,16 +40,13 @@
                     newButton.attr("data-topic", topics[j]);
                     newButton.attr("class", "newGifs");
                     $("#stringButtons").append(newButton);
-
                 }
-
             };
             //calling the function
             makeButton();
 
             //a click function to add the new button from the user
             $("#addTopic").on("click", function () {
-                event.preventDefault();
                 var temp = $("#userTopic").val().trim();
                 topics.push(temp);
                 // $("#stringButtons").append(topics)
@@ -63,48 +59,45 @@
             });
 
             //a click function to ppost the images of the selected button
-            $(".newGifs").on("click", function () {
+            $(document).on("click", ".newGifs", function () {
                 var choice = $(this).attr("data-topic");
-
                 var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + choice + "&api_key=dc6zaTOxFJmzC&limit=10";
 
-                
+                $.ajax({
+                    url: queryURL,
+                    method: "GET"
+                }).done(function (response) {
+                    console.log(response);
+                    for (var i = 0; i < 10; i++) {
 
-                    $.ajax({
-                        url: queryURL,
-                        method: "GET"
-                    }).done(function (response) {
-                        console.log(response);
-                        for (var i = 0; i < 10; i++) {
                         var tempTwo = response.data[i].rating;
-                        // var tempTwo = results[i].rating;
-
                         var rating = $("<p>").text("Rating: " + tempTwo);
 
                         var imageUrl = response.data[i].images.fixed_height_small.url;
                         var imageUrlStill = response.data[i].images.fixed_height_small_still.url;
 
-                        var gifDiv = $("<div class='switch'>");
-
+                        var gifDiv = $("<div>");
                         var topicImage = $("<img>");
 
                         topicImage.attr("src", imageUrlStill);
                         topicImage.attr("alt", choice + "-image");
                         topicImage.attr("data-still", imageUrlStill);
+                        topicImage.attr("class", "switch")
                         topicImage.attr("data-animate", imageUrl);
                         topicImage.attr("data-state", "still");
-                        
 
-                            gifDiv.prepend(rating);
-                            gifDiv.prepend(topicImage);
+
+                        gifDiv.prepend(rating);
+                        gifDiv.prepend(topicImage);
                         $("#images").prepend(gifDiv);
-                        }
-                    });
-                
+                        console.log("click");
+                    }
+                });
+
             });
 
             //click function to switch between animate and still states
-            $(".switch").on("click", function () {
+            $(document).on("click", ".switch", function () {
                 console.log("click");
 
                 var state = $(this).attr("data-state");
@@ -118,7 +111,7 @@
                 }
             });
 
-            
+
         });
     </script>
 </body>
